@@ -82,6 +82,7 @@ while True:
          n_top_taxis=input("ingrese el numero de compañias top que desea")
          n_top_services=input("ingrese el numero de compañias top que desea")
          lista_final=controller.A(cont,n_top_taxis,n_top_services)
+         printA(lista_final,cont)
     elif int(inputs[0]) == 2:
 
 
