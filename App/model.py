@@ -203,8 +203,7 @@ def mstsInRangeDates(DateOmap, date1, date2, n):
 
 def bestTimeToGo(graph, origin, destination, hour1, hour2):
     ac_hour = hour1
-    min_duration = None
-    recomend_go = None
+    min_duration, search_r, recomend_go, end_go = None, None, None, None
     while ac_hour < hour2:
         origin_s = (origin, ac_hour)
         arr_hour = ac_hour
