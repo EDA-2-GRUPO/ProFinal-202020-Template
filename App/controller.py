@@ -45,7 +45,24 @@ recae sobre el controlador.
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
+def loadServices(analyzer, servicesfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un arco entre cada par de estaciones que
+    pertenecen al mismo servicio y van en el mismo sentido.
 
+    addRouteConnection crea conexiones entre diferentes rutas
+    servidas en una misma estación.
+    """
+    servicesfile = cf.data_dir + servicesfile
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+                                delimiter=",")
+    for service in input_file:
+        analyzer["num"] += 1
+        model.addStopConnection(analyzer, service)
+    model.addRoutes(analyzer)
+
+    return analyzer
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
