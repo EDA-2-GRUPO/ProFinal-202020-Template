@@ -66,7 +66,7 @@ def newAnalyzer():
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
-# Funciones para agregar informacion al grafo
+
 def addtaxi(taxi_id, analizer):
     if not m.contains(analizer, taxi_id):
         m.put(analizer, taxi_id,0)
@@ -105,9 +105,6 @@ def admpqs(map_companies,maxpq_ntaxis,maxpq_nservices):
        numero_servicios_compani=lt.getElement(compani_info, 1)
        numero_taxis_compani=m.size(map_taxis)
        #add_to_maxpqs
-    #    print(next_compani)
-    #    print(numero_taxis_compani, "taxis")
-    #    print(numero_servicios_compani,"servicios")
        pq.insert(maxpq_ntaxis, next_compani,1000000/numero_taxis_compani)
        pq.insert(maxpq_nservices, next_compani,1000000/numero_servicios_compani)
 def rank_maxpq(maxpq, numero):
