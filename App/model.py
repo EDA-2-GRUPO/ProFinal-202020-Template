@@ -78,6 +78,12 @@ def newAnalyzer():
 
 # Funciones para agregar informacion al grafo
 
+def tryConvert(text):
+    try:
+        return float(text)
+    except:
+        return False
+
 
 def addStopConnection(Services, viaje):
     """
@@ -93,19 +99,22 @@ def addStopConnection(Services, viaje):
     """
 
     try:
-        taxi_id, trip_total, trip_miles = viaje['taxi_id'], viaje['trip_total'], viaje['trip_miles']
+
+        taxi_id, trip_total, trip_miles = viaje['taxi_id'], tryConvert(viaje['trip_total']), tryConvert(
+            viaje['trip_miles'])
         origin, destination = viaje["pickup_community_area"], viaje["dropoff_community_area"]
         Ocurredt1, Ocurredt2 = viaje['trip_start_timestamp'], viaje['trip_end_timestamp']
-        duration = viaje["trip_seconds"]
-        if Ocurredt1 and Ocurredt2 and trip_miles and trip_total and Ocurredt1 and duration:
-            Ocurredt1, Ocurredt2 = toDatetime(Ocurredt1), toDatetime(Ocurredt2)
-            orgin_f, destination_f = (origin, Ocurredt1.time()), (destination, Ocurredt2.time())
-            trip_miles, trip_total = float(trip_miles), float(trip_total)
-            duration = float(duration)
-            addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
-            addVertexAndMapDuration(Services['Graph_Duration'], Services['Map_Routes'], orgin_f, destination_f,
-                                    duration)
+        duration = tryConvert(viaje["trip_seconds"])
 
+        if Ocurredt1:
+            Ocurredt1 = toDatetimeC(Ocurredt1)
+            if taxi_id and trip_miles and trip_total:
+                addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
+            if origin and destination and duration and Ocurredt2:
+                Ocurredt2 = toDatetimeC(Ocurredt2)
+                orgin_f, destination_f = (origin, Ocurredt1.time()), (destination, Ocurredt2.time())
+                addVertexAndMapDuration(Services['Graph_Duration'], Services['Map_Routes'], orgin_f, destination_f,
+                                        duration)
         return Services
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
@@ -150,6 +159,8 @@ def addTaxi(map_taxis, taxi_id, trip_total, trip_miles):
 def addVertexAndMapDuration(graph, map_routes, origin_f, destination_f, duration):
     gr.insertVertex(graph, origin_f)
     gr.insertVertex(graph, destination_f)
+    if origin_f[0] == '76.0' and origin_f[1] == time(12, 00) and destination_f[0] == '8.0' and destination_f[1] == time(12, 00):
+        print(duration)
     route_k = (origin_f, destination_f)
     route = mp.get(map_routes, route_k)
     if route is None:
@@ -273,8 +284,8 @@ def insertInRank(rank, el, order, n):
 def nextTime(o_time):
     hour = o_time.hour
     minute = o_time.minute
-    if minute <= 45:
-        minute = minute + 15
+    if minute < 45:
+        minute = (minute + 15)
     elif hour != 23:
         minute = 0
         hour += 1
@@ -282,9 +293,16 @@ def nextTime(o_time):
     return new_time
 
 
-def toDatetime(text: str):
+def toDatetimeD(text: str):
+    return datetime.strptime(text, '%Y-%m-%d').date()
+
+
+def toDatetimeC(text: str):
     return datetime.strptime(text, '%Y-%m-%dT%H:%M:%S.000')
 
+
+def toDatetimeH(time_string):
+    return time.fromisoformat(time_string)
 
 # ==============================
 # Funciones de Comparacion
@@ -315,7 +333,7 @@ def compareOmpLst(date1, date2):
 
 
 def order_aux_max(el1, el2):
-    if el1['num'] < el2['num']:
+    if el1['points'] < el2['points']:
         return 0
     else:
         return 1

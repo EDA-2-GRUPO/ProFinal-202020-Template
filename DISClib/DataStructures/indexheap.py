@@ -128,7 +128,7 @@ def contains(iheap, key):
         error.reraise(exp, 'indexheap:contains')
 
 
-def first(iheap):
+def min(iheap):
     """
     Retorna el primer elemento del heap, es decir el menor elemento
 
@@ -148,7 +148,7 @@ def first(iheap):
         error.reraise(exp, 'indexheap:first')
 
 
-def delFirst(iheap):
+def delMin(iheap):
     """
     Retorna el menor elemento del heap y lo elimina.
     Se reemplaza con el último elemento y se hace sink.
@@ -241,7 +241,7 @@ def exchange(iheap, i, j):
         error.reraise(exp, 'indexheap:exchange')
 
 
-def greater(parent, element):
+def greater(iheap, parent, element):
     """
     Indica si el index de parent es mayor
     que index de element
@@ -252,7 +252,7 @@ def greater(parent, element):
         error.reraise(exp, 'indexheap:greater')
 
 
-def smaller(parent, element):
+def smaller(iheap,parent, element):
     """
        Indica si el index de parent es mayor
        que index de element

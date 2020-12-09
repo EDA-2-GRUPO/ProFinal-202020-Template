@@ -66,6 +66,23 @@ def loadServices(analyzer, servicesfile):
     model.addRoutes(analyzer)
 
     return analyzer
+
+
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
+
+def partB_1(cont, date, n):
+    date = model.toDatetimeD(date)
+    return model.mstInDate(cont['Omap_Dates'], date, int(n))
+
+
+def partB_2(cont, date1, date2, n):
+    date1, date2 = model.toDatetimeD(date1), model.toDatetimeD(date2)
+    return model.mstsInRangeDates(cont['Omap_Dates'], date1, date2, int(n))
+
+
+def partC(cont, comunityA, comunityB, hour1, hour2):
+    hour1 = model.toDatetimeH(hour1)
+    hour2 = model.toDatetimeH(hour2)
+    return model.bestTimeToGo(cont['Graph_Duration'], comunityA, comunityB, hour1, hour2)

@@ -24,12 +24,12 @@
  *
  """
 
-
 import sys
 import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+
 assert config
 
 """
@@ -38,6 +38,7 @@ Presenta el menu de opciones  y  por cada seleccion
 hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
+
 
 # ___________________________________________________
 #  Variables
@@ -57,11 +58,14 @@ def printMenu():
     print("1- Parte A")
     print("2- Parte B")
     print("5- Parte c")
+
+
 """
 Menu principal
 """
-dict_files = {'1': 'taxi-trips-wrvz-psew-subset-small.csv' ,'2': 'taxi-trips-wrvz-psew-subset-medium.csv',
-              '3': "taxi-trips-wrvz-psew-subset-large"}
+dict_files = {'1': 'taxi-trips-wrvz-psew-subset-small.csv', '2': 'taxi-trips-wrvz-psew-subset-medium.csv',
+              '3': "taxi-trips-wrvz-psew-subset-large.csv"}
+
 
 def inicializar():
     print("\nInicializando....")
@@ -92,13 +96,24 @@ while True:
 
 
     elif int(inputs[0]) == 2:
-        pass
+        inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
+        if inputs[0] == '1':
+            d = input('ingrese date')
+            n = input('ingrese n')
+            print(controller.partB_1(cont, d, n))
+        else:
+            d1 = input('ingrese date1')
+            d2 = input('ingrese date2')
+            n = input('ingrese n')
+            print(controller.partB_2(cont, d1, d2, n))
 
 
     elif int(inputs[0]) == 3:
-        pass
+        h1 = input('hora1')
+        h2 = input('hora2')
+        o = input('pick')
+        d = input('drofft')
+        print(controller.partC(cont, o, d, h1, h2))
 
     else:
         break
-
-
