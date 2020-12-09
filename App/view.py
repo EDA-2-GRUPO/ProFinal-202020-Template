@@ -29,7 +29,7 @@ import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
-
+from DISClib.DataStructures import listiterator as it
 assert config
 
 """
@@ -44,7 +44,11 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-
+def printB(lista):
+    iterador = it.newIterator(lista)
+    while it.hasNext(iterador):
+        next=it.next(iterador)
+        print(next)
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -100,20 +104,20 @@ while True:
         if inputs[0] == '1':
             d = input('ingrese date')
             n = input('ingrese n')
-            print(controller.partB_1(cont, d, n))
+            lista_final=controller.partB_1(cont, d, n)
+            printB(lista_final)
         else:
             d1 = input('ingrese date1')
             d2 = input('ingrese date2')
             n = input('ingrese n')
-            print(controller.partB_2(cont, d1, d2, n))
-
-
+            lista_final=controller.partB_2(cont, d1, d2, n)
+            printB(lista_final)
     elif int(inputs[0]) == 3:
         h1 = input('hora1')
         h2 = input('hora2')
         o = input('pick')
         d = input('drofft')
-        print(controller.partC(cont, o, d, h1, h2))
-
+        lista_final=controller.partC(cont, o, d, h1, h2)
+        print(lista_final)
     else:
         break
