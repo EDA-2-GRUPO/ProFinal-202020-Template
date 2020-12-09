@@ -26,10 +26,12 @@
 
 import config as cf
 from App import model
+import os
+from timeit import default_timer as dt
 import csv
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
-
+from time import perf_counter
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -42,14 +44,25 @@ recae sobre el controlador.
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
-def Init():
-    return model.newAnalyzer
+def init():
+    return model.newAnalyzer()
 
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
 # ___________________________________________________
+def loadall(analyzer):
+    t1_start = perf_counter()
+    for filename in os.listdir(cf.data_dir):
+            if filename.endswith('.csv'):
+                print('Cargando archivo: ' + filename)
+                load(analyzer, filename)
+    t1_stop = perf_counter() 
+    print("Elapsed time during the whole program in seconds:", 
+                                        t1_stop-t1_start) 
+    return analyzer
 def load(analyzer,servicesfile):
+    
     servicesfile = cf.data_dir + servicesfile
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
                                 delimiter=",")
@@ -58,30 +71,33 @@ def load(analyzer,servicesfile):
         compania= service["company"]
         model.addtaxi(taxi_id, analyzer["taxis"])
         model.addcompania(compania,taxi_id,analyzer)
-        model.admpqs(analyzer["compcont"], 
-                     analyzer['Maxpq-Afiliados-Compañias-services'],
-                     analyzer['Maxpq-Afiliados-Compañias-taxis'])
+    model.admpqs(analyzer["compcont"], 
+    analyzer['Maxpq-Afiliados-Compañias-services'],
+    analyzer['Maxpq-Afiliados-Compañias-taxis'])    
     return analyzer
 
 # ___________________________________________________
 #  Funciones para consultas
 # ___________________________________________________
 def A(analyzer,n_top_taxis,n_top_services):
+    n_top_services=int(n_top_services)
+    n_top_taxis=int(n_top_taxis)
     lista_final=lt.newList()
-    taxis_reportados=m.size(analyzer['taxis'])
-    companies_taxi_ins=analyzer["companies"]
     lista_top_taxis_compani=model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-taxis'],
                                             n_top_taxis)
     lista_top_services_compani=model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-services'],
                                                 n_top_services)
-    lt.addLast(lista_final, taxis_reportados)
-    lt.addLast(lista_final, companies_taxi_ins)
     lt.addLast(lista_final, lista_top_services_compani)
     lt.addLast(lista_final, lista_top_taxis_compani)
     return lista_final
 def search(analyzer, key,pos):
-    num=lt.getElement(m.get(analyzer['compcont'],key), pos)
-    return num 
+    compania_info=m.get(analyzer["compcont"], key)["value"]
+    if pos ==1:
+       n_servicios=lt.getElement(compania_info,2)
+       n_servicios=m.size(n_servicios)
+    elif pos ==0:
+       n_servicios=lt.getElement(compania_info,1)
+    return n_servicios
 
     
     

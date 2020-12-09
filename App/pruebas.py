@@ -11,10 +11,10 @@ def greater(key1, key2):
         return 1
 minpq = pq.newIndexMinPQ(greater)
 
-pq.insert(minpq, "5",5)
-pq.insert(minpq, "23",23)
-pq.insert(minpq, "31",31)
-pq.insert(minpq, "15",15)
+pq.insert(minpq, "5",1000/5)
+pq.insert(minpq, "23",1000/23)
+pq.insert(minpq, "31",1000/31)
+pq.insert(minpq, "15",1000/15)
 
 print(pq.delMin(minpq))
 print(pq.delMin(minpq))

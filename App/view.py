@@ -43,26 +43,33 @@ operación seleccionada.
 #  printeo funciones
 # ___________________________________________________
 def printA(lista,cont):
-    iterador=it.newIterator(lista)
-    while it.hasNext(iterador):
-        nextv= it.next(iterador)
-        if type(nextv)== int:
-            print(nextv)
-        else: 
-           iterador2=it.newIterator(nextv)
-           n=0
-           while it.hasNext(iterador2):
-              next_comp=it.next(iterador2)
-              print(next_comp)
-              if n==0:
-                print(controller.search(cont,next_comp,n))
-              else:
-                mapa=m.size(controller.search(cont,next_comp,n))            
-            
+    print(m.size(cont["taxis"]))
+    print(cont["companies"])
+    print_=-1
+    iterador2=it.newIterator(lista)
+    while it.hasNext(iterador2):
+     next_comp=it.next(iterador2)
+     if print_==0:
+         print("_____________")
+         print("Top taxis")
+         print("_____________\n")
+         print_+=1
+     else:
+         print("_________")
+         print("Top servicios")
+         print("_________\n")
+         print_+=1
+     iterador=it.newIterator(next_comp)
+     while it.hasNext(iterador):
+           next=it.next(iterador)
+           print(next)
+           print(controller.search(cont,next,print_))
+
 # ___________________________________________________
 #  Variables
 # ___________________________________________________
-
+def printMenu():
+    print("hello")
 
 # ___________________________________________________
 #  Menu principal
@@ -75,21 +82,17 @@ while True:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
-
+        print(cont.keys())
     elif inputs[0] == "w":
-        controller.load(cont, servicesfile)
+        controller.loadall(cont)
     elif int(inputs[0]) == 1:
          n_top_taxis=input("ingrese el numero de compañias top que desea")
          n_top_services=input("ingrese el numero de compañias top que desea")
          lista_final=controller.A(cont,n_top_taxis,n_top_services)
          printA(lista_final,cont)
-    elif int(inputs[0]) == 2:
-
-
-    elif int(inputs[0]) == 3:
-
-
     else:
+        print("Opcion invalida")
+        continue
 
 sys.exit(0)
 """
