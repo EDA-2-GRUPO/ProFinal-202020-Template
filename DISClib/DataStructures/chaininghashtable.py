@@ -77,6 +77,7 @@ def newMap(numelements, prime, loadfactor, cmpfunction):
                  'shift': shift,
                  'table': table,
                  'currentfactor': 0,
+                 'limitfactor' : loadfactor,
                  'size': 0,
                  'comparefunction': cmpfunction,
                  'type': 'CHAINING'}

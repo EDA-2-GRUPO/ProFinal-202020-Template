@@ -48,6 +48,57 @@ operación seleccionada.
 #  Menu principal
 # ___________________________________________________
 
+def printMenu():
+    print("\n")
+    print("*******************************************")
+    print("Bienvenido")
+    print("q- Inicializar Analizador")
+    print("w- Cargar información")
+    print("1- Parte A")
+    print("2- Parte B")
+    print("5- Parte c")
 """
 Menu principal
 """
+dict_files = {'1': 'taxi-trips-wrvz-psew-subset-small.csv' ,'2': 'taxi-trips-wrvz-psew-subset-medium.csv',
+              '3': "taxi-trips-wrvz-psew-subset-large"}
+
+def inicializar():
+    print("\nInicializando....")
+    return controller.incializar()
+
+
+def cargar(cont):
+    print('cargando')
+    print('seleccion el volumen de datos')
+    c = input('1: small, 2: medium, 3: large')
+    controller.loadServices(cont, dict_files[c])
+    print('se han cargado los datos')
+    return cont
+
+
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if inputs[0] == "w":
+        cont = inicializar()
+
+    elif inputs[0] == "q":
+        cargar(cont)
+
+    elif int(inputs[0]) == 1:
+        pass
+
+
+    elif int(inputs[0]) == 2:
+        pass
+
+
+    elif int(inputs[0]) == 3:
+        pass
+
+    else:
+        break
+
+

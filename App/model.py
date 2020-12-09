@@ -95,12 +95,17 @@ def addStopConnection(Services, viaje):
     try:
         taxi_id, trip_total, trip_miles = viaje['taxi_id'], viaje['trip_total'], viaje['trip_miles']
         origin, destination = viaje["pickup_community_area"], viaje["dropoff_community_area"]
+        Ocurredt1, Ocurredt2 = viaje['trip_start_timestamp'], viaje['trip_end_timestamp']
+        duration = viaje["trip_seconds"]
+        if Ocurredt1 and Ocurredt2 and trip_miles and trip_total and Ocurredt1 and duration:
+            Ocurredt1, Ocurredt2 = toDatetime(Ocurredt1), toDatetime(Ocurredt2)
+            orgin_f, destination_f = (origin, Ocurredt1.time()), (destination, Ocurredt2.time())
+            trip_miles, trip_total = float(trip_miles), float(trip_total)
+            duration = float(duration)
+            addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
+            addVertexAndMapDuration(Services['Graph_Duration'], Services['Map_Routes'], orgin_f, destination_f,
+                                    duration)
 
-        Ocurredt1, Ocurredt2 = toDatetime(viaje['trip_start_servicestamp']), toDatetime(viaje['trip_end_servicestamp'])
-        duration = float(viaje["trip_seconds"])
-        orgin_f, destination_f = (origin, Ocurredt1.time()), (destination, Ocurredt2.time())
-        addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
-        addVertexAndMapDuration(Services['Graph_Duration'], Services['Map_Routes'], orgin_f, destination_f, duration)
         return Services
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
@@ -132,7 +137,7 @@ def addDate(DateOmap, date, taxi_id, trip_total, trip_miles):
 def addTaxi(map_taxis, taxi_id, trip_total, trip_miles):
     taxi = mp.get(map_taxis, taxi_id)
     if taxi is None:
-        points_info = {'miles': trip_miles, 'payment': trip_total, 'services': 1}
+        points_info = {'miles': trip_miles, 'payments': trip_total, 'services': 1}
         mp.put(map_taxis, taxi_id, points_info)
     else:
         points_info = taxi['value']
@@ -249,6 +254,7 @@ def insertInRank(rank, el, order, n):
                 pos = pos - 1
             else:
                 break
+
     cen = False
     size = lt.size(rank)
     if size < n:
