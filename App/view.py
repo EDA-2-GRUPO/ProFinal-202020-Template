@@ -49,6 +49,13 @@ def printB(lista):
     while it.hasNext(iterador):
         next=it.next(iterador)
         print(next)
+def printC(lista):
+    print("hora: ",lista["hour"])
+    iterador=it.newIterator(lista["path"])
+    while it.hasNext(iterador):
+       next=it.next(iterador)
+       print("VertexA: ",next["vertexA"][0]+" "+str(next["vertexA"][1]),"VertexB: ",next["vertexB"][0]+" "+str(next["vertexB"][1]))
+    print("time: ", lista["time"])
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -118,6 +125,6 @@ while True:
         o = input('pick')
         d = input('drofft')
         lista_final=controller.partC(cont, o, d, h1, h2)
-        print(lista_final)
+        printC(lista_final)
     else:
         break
