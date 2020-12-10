@@ -77,6 +77,9 @@ def printB(lista):
         next=it.next(iterador)
         print(next)
 def printC(lista):
+    if lista==None:
+        print("No hay una camino")
+        return 0 
     print("hora: ",lista["hour"])
     iterador=it.newIterator(lista["path"])
     while it.hasNext(iterador):

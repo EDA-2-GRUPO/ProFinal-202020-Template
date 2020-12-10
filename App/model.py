@@ -44,8 +44,6 @@ assert config
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
 """
-
-
 # -----------------------------------------------------
 #                       API
 # -----------------------------------------------------
@@ -59,6 +57,7 @@ def newAnalyzer():
    Num: Almacena El numero de viajes
    vertex: Mapa de los vertices segun lat y long
     """
+    try:    
         Service = {'Graph_Duration': gr.newGraph(datastructure='ADJ_LIST',
                                                  directed=True,
                                                  size=200,
