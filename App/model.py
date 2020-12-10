@@ -44,6 +44,8 @@ assert config
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
 """
+
+
 # -----------------------------------------------------
 #                       API
 # -----------------------------------------------------
@@ -57,40 +59,33 @@ def newAnalyzer():
    Num: Almacena El numero de viajes
    vertex: Mapa de los vertices segun lat y long
     """
-    try:    
-        Service = {'Graph_Duration': gr.newGraph(datastructure='ADJ_LIST',
-                                                 directed=True,
-                                                 size=200,
-                                                 comparefunction=compareStopIds),
-                   "Map_Routes": mp.newMap(numelements=200,
-                                           maptype="CHAINING",
-                                           comparefunction=compareStopIds, loadfactor=0.9),
-                   "Omap_Dates": omp.newMap(omaptype='RBT', comparefunction=compareOmpLst),
-                   "num": 0,
-                   'taxis': m.newMap(numelements=14000,
+    try:
+        Services = {'Graph_Duration': gr.newGraph(datastructure='ADJ_LIST',
+                                                  directed=True,
+                                                  size=200,
+                                                  comparefunction=compareStopIds),
+                    "Map_Routes": mp.newMap(numelements=200,
+                                            maptype="PROBING",
+                                            comparefunction=compareStopIds, loadfactor=0.5),
+                    "Omap_Dates": omp.newMap(omaptype='RBT', comparefunction=compareOmpLst),
+                    'taxis': m.newMap(numelements=14000,
                                       maptype='PROBING',
                                       comparefunction=compareMp),
-                    "companies":0,
-                    'compcont': m.newMap(numelements=14000,
-                                      maptype='PROBING',
-                                      comparefunction=compareMp),
+                    'Map_Companies': m.newMap(numelements=14000,
+                                              maptype='PROBING',
+                                              comparefunction=compareMp),
                     'Maxpq-Afiliados-Compañias-services': pq.newIndexMinPQ(compareMp),
-                    'Maxpq-Afiliados-Compañias-taxis': pq.newIndexMinPQ(compareMp)}
-        return Service
+                    'Maxpq-Afiliados-Compañias-taxis': pq.newIndexMinPQ(compareMp),
+                    "Num Services": 0}
+        return Services
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
 
 # Funciones para agregar informacion al grafo
 
-def tryConvert(text):
-    try:
-        return float(text)
-    except:
-        return False
 
-
-def addStopConnection(Services, viaje):
+def addStopConnection(Services, service):
     """
     Adiciona las estaciones al grafo como vertices y arcos entre las
     estaciones adyacentes.
@@ -105,12 +100,18 @@ def addStopConnection(Services, viaje):
 
     try:
 
-        taxi_id, trip_total, trip_miles = viaje['taxi_id'], tryConvert(viaje['trip_total']), tryConvert(
-            viaje['trip_miles'])
-        origin, destination = viaje["pickup_community_area"], viaje["dropoff_community_area"]
-        Ocurredt1, Ocurredt2 = viaje['trip_start_timestamp'], viaje['trip_end_timestamp']
-        duration = tryConvert(viaje["trip_seconds"])
+        taxi_id, trip_total, trip_miles = service['taxi_id'], tryConvert(service['trip_total']), tryConvert(
+            service['trip_miles'])
+        origin, destination = service["pickup_community_area"], service["dropoff_community_area"]
+        Ocurredt1, Ocurredt2 = service['trip_start_timestamp'], service['trip_end_timestamp']
+        duration = tryConvert(service["trip_seconds"])
+        compania = service["company"]
 
+        if taxi_id:
+            addTaxi(taxi_id, Services['taxis'])
+            if not compania:
+                compania = 'Independent Owner'
+            addCompany(compania, taxi_id, Services["Map_Companies"])
         if Ocurredt1:
             Ocurredt1 = toDatetimeC(Ocurredt1)
             if taxi_id and trip_miles and trip_total:
@@ -136,19 +137,19 @@ def addDate(DateOmap, date, taxi_id, trip_total, trip_miles):
     """
     timeRoot = omp.get(DateOmap, date)
     if timeRoot is None:
-        timeValue = {'map_taxis': mp.newMap(100, maptype='CHAINING', comparefunction=compareStopIds, loadfactor=0.9),
+        timeValue = {'map_taxis': mp.newMap(100, maptype='PROBING', comparefunction=compareStopIds, loadfactor=0.9),
                      'count': 1}
         omp.put(DateOmap, date, timeValue)
     else:
         timeValue = timeRoot['value']
         timeValue['count'] += 1
 
-    addTaxi(timeValue['map_taxis'], taxi_id, trip_total, trip_miles)
+    addTaxiPoints(timeValue['map_taxis'], taxi_id, trip_total, trip_miles)
 
     return DateOmap
 
 
-def addTaxi(map_taxis, taxi_id, trip_total, trip_miles):
+def addTaxiPoints(map_taxis, taxi_id, trip_total, trip_miles):
     taxi = mp.get(map_taxis, taxi_id)
     if taxi is None:
         points_info = {'miles': trip_miles, 'payments': trip_total, 'services': 1}
@@ -190,64 +191,50 @@ def addRoutes(Services):
         gr.addEdge(graph_routes, vertexa, vertexb, prom)
 
 
-
-def addtaxi(taxi_id, analizer):
+def addTaxi(taxi_id, analizer):
     if not m.contains(analizer, taxi_id):
-        m.put(analizer, taxi_id,0)
+        m.put(analizer, taxi_id, 0)
         return analizer
-def addcompania(compania, taxi_id, analyzer):
-    map_compania=analyzer["compcont"]
+
+
+def addCompany(compania, taxi_id, map_compania):
     if m.contains(map_compania, compania):
-        compania_info=m.get(map_compania, compania)["value"]
-        n_servicios=lt.getElement(compania_info,1)
-        n_servicios+=1
-        lt.deleteElement(compania_info,1)
-        lt.addFirst(compania_info,n_servicios)
-        map_taxis=lt.getElement(compania_info,2)
-        if not m.contains(map_taxis,taxi_id):
-            m.put(map_taxis,taxi_id,0)
-            return analyzer
-        return analyzer
+        compania_info = m.get(map_compania, compania)["value"]
+        n_servicios = lt.getElement(compania_info, 1)
+        n_servicios += 1
+        lt.changeInfo(compania_info, 1, n_servicios)
+        map_taxis = lt.getElement(compania_info, 2)
+        if not m.contains(map_taxis, taxi_id):
+            m.put(map_taxis, taxi_id, 0)
+            return map_compania
+        return map_compania
     else:
-        analyzer["companies"]+=1
-        lista_compañia=lt.newList()
-        mapa_taxis= m.newMap(numelements=40,
+        compania_info = lt.newList()
+        map_taxis = m.newMap(numelements=40,
                              maptype='PROBING',
                              comparefunction=compareMp)
-        addtaxi(taxi_id,mapa_taxis)
-        #añade todo a compcont
-        lt.addLast(lista_compañia, 1)
-        lt.addLast(lista_compañia, mapa_taxis)
-        m.put(map_compania,compania,lista_compañia)
-def admpqs(map_companies,maxpq_ntaxis,maxpq_nservices):
-    lista_companias=m.keySet(map_companies)
-    iterador= it.newIterator(lista_companias)
+        addTaxi(taxi_id, map_taxis)
+        # añade todo a Map_Companies
+        lt.addLast(compania_info, 1)
+        lt.addLast(compania_info, map_taxis)
+        m.put(map_taxis, taxi_id, 0)
+        m.put(map_compania, compania, compania_info)
+
+
+def admpqs(map_companies, maxpq_ntaxis, maxpq_nservices):
+    lista_companias = m.keySet(map_companies)
+    iterador = it.newIterator(lista_companias)
     while it.hasNext(iterador):
-       next_compani=it.next(iterador)
-       compani_info=m.get(map_companies,next_compani)["value"]
-       map_taxis=lt.getElement(compani_info, 2)
-       numero_servicios_compani=lt.getElement(compani_info, 1)
-       numero_taxis_compani=m.size(map_taxis)
-       #add_to_maxpqs
-       pq.insert(maxpq_ntaxis, next_compani,1000000/numero_taxis_compani)
-       pq.insert(maxpq_nservices, next_compani,1000000/numero_servicios_compani)
-def rank_maxpq(maxpq, numero):
-    lista_companies= lt.newList()
-    for a in range(0,numero):
-       llave=pq.min(maxpq)
-       pq.delMin(maxpq)
-       lt.addLast(lista_companies, llave)
-    return lista_companies
-def rehacer(lista, mapa_companies,pq,pos):
-    iterador=it.newIterator(lista)
-    while it.hasNext(iterador):
-        nextc=it.next()
-        if pos == 0:
-           numero=lt.get(m.get(mapa_companies,nextc),pos)
-        else:
-           mapa=lt.get(m.get(mapa_companies,nextc),pos)
-           numero=m.size(mapa)
-        pq.insert(pq,nextc,numero)
+        next_compani = it.next(iterador)
+        compani_info = m.get(map_companies, next_compani)["value"]
+        map_taxis = lt.getElement(compani_info, 2)
+        numero_servicios_compani = lt.getElement(compani_info, 1)
+        numero_taxis_compani = m.size(map_taxis)
+        # add_to_maxpqs
+        pq.insert(maxpq_ntaxis, next_compani, 1000000 / numero_taxis_compani)
+        pq.insert(maxpq_nservices, next_compani, 1000000 / numero_servicios_compani)
+
+
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -274,24 +261,25 @@ def mstsInRangeDates(DateOmap, date1, date2, n):
         for _ in range(lt.size(taxis_ids)):
             taxi_id = it.next(iter_taxis)
             taxi_info = mp.get(mapTaxis, taxi_id)['value']
-            addTaxi(frequency_taxi, taxi_id, taxi_info['payments'], taxi_info['miles'])
+            addTaxiPoints(frequency_taxi, taxi_id, taxi_info['payments'], taxi_info['miles'])
     return mstsFreqTaxiInMap(frequency_taxi, n)
 
 
 def bestTimeToGo(graph, origin, destination, hour1, hour2):
     ac_hour = hour1
-    min_duration, search_r, recomend_go, end_go = 0, None, None, None
+    min_duration, search_r, recomend_go, end_go = None, None, None, None
     while ac_hour < hour2:
         origin_s = (origin, ac_hour)
         arr_hour = ac_hour
         search = djk.Dijkstra(graph, origin_s)
         permition = 900
-        while arr_hour != nextTime(arr_hour) and permition < min_duration:
+        while arr_hour != nextTime(arr_hour) and (min_duration is None or min_duration < permition):
             destination_s = (destination, arr_hour)
             if djk.hasPathTo(search, destination_s):
                 duration = djk.distTo(search, destination_s)
-                if viabletime(ac_hour, arr_hour, duration / 60, permition/60):
-                    if min_duration == 0 or duration < min_duration:
+                print(1, duration, ac_hour, arr_hour)
+                if viableTime(ac_hour, arr_hour, duration / 60, permition / 60):
+                    if min_duration is None or duration < min_duration:
                         print(2, duration, ac_hour, arr_hour)
                         min_duration = duration
                         recomend_go = ac_hour
@@ -303,20 +291,36 @@ def bestTimeToGo(graph, origin, destination, hour1, hour2):
             arr_hour = nextTime(arr_hour)
         ac_hour = nextTime(ac_hour)
 
-    if min_duration == 0:
+    if min_duration is None:
         return None
     camino = djk.pathTo(search_r, (destination, end_go))
     return {'hour': recomend_go, 'path': camino, 'time': min_duration}
 
 
-def viabletime(t1, t2, d, p):
-    return t1.hour * 60 + t1.minute + d < (t2.hour * 60 + t2.minute) + p + 15
-
+def rank_maxpq(maxpq, numero):
+    lista_companies = lt.newList()
+    for a in range(0, numero):
+        llave = pq.min(maxpq)
+        pq.delMin(maxpq)
+        lt.addLast(lista_companies, llave)
+    return lista_companies
 
 
 # ==============================
 # Funciones Helper
 # ==============================
+def rehacer(lista, mapa_companies, pq, pos):
+    iterador = it.newIterator(lista)
+    while it.hasNext(iterador):
+        nextc = it.next()
+        if pos == 0:
+            numero = lt.get(m.get(mapa_companies, nextc), pos)
+        else:
+            mapa = lt.get(m.get(mapa_companies, nextc), pos)
+            numero = m.size(mapa)
+        pq.insert(pq, nextc, numero)
+
+
 def mstsFreqTaxiInMap(mapTaxis, n):
     taxis_ids = mp.keySet(mapTaxis)
     iter_taxis = it.newIterator(taxis_ids)
@@ -331,27 +335,17 @@ def mstsFreqTaxiInMap(mapTaxis, n):
 
 
 def insertInRank(rank, el, order, n):
-    def iterIN(large):
-        pos = large
-        for i in range(1, large):
-            if order(lt.getElement(rank, pos), lt.getElement(rank, pos - 1)):
-                lt.exchange(rank, pos, pos - 1)
-                pos = pos - 1
-            else:
-                break
-
-    cen = False
     size = lt.size(rank)
-    if size < n:
-        size += 1
-        lt.addLast(rank, el)
-        cen = True
-    else:
-        if order(el, lt.getElement(rank, size)):
-            lt.changeInfo(rank, size, el)
-            cen = True
-    if cen:
-        iterIN(size)
+    pos = size + 1
+    while pos > 1:
+        if order(el, lt.getElement(rank, pos - 1)):
+            pos -= 1
+        else:
+            break
+    if pos <= n:
+        lt.insertElement(rank, el, pos)
+        if size >= n:
+            lt.removeLast(rank)
     return rank
 
 
@@ -365,6 +359,17 @@ def nextTime(o_time):
         hour += 1
     new_time = time(hour, minute)
     return new_time
+
+
+def tryConvert(text):
+    try:
+        return float(text)
+    except ValueError:
+        return False
+
+
+def viableTime(t1, t2, d, p):
+    return t1.hour * 60 + t1.minute + d < (t2.hour * 60 + t2.minute) + p + 15
 
 
 def toDatetimeD(text: str):
@@ -412,6 +417,8 @@ def order_aux_max(el1, el2):
         return 0
     else:
         return 1
+
+
 def compareMp(key1, el2):
     """
     Comparacion para Map

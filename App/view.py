@@ -32,64 +32,75 @@ from DISClib.DataStructures import listiterator as it
 from time import perf_counter
 
 assert config
-from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import map as m
+
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion
 hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
+
+
 # ___________________________________________________
 #  printeo funciones
 # ___________________________________________________
 
 
-
 # ___________________________________________________
 #  Variables
 # ___________________________________________________
-def printA(lista,cont):
+def printA(lista, cont):
     print(m.size(cont["taxis"]))
     print(cont["companies"])
-    print_=-1
-    iterador2=it.newIterator(lista)
+    print_ = -1
+    iterador2 = it.newIterator(lista)
     while it.hasNext(iterador2):
-     next_comp=it.next(iterador2)
-     if print_==0:
-         print("_____________")
-         print("Top taxis")
-         print("_____________\n")
-         print_+=1
-     else:
-         print("_________")
-         print("Top servicios")
-         print("_________\n")
-         print_+=1
-     iterador=it.newIterator(next_comp)
-     while it.hasNext(iterador):
-           next=it.next(iterador)
-           print(next)
-           print(controller.search(cont,next,print_))
+        next_comp = it.next(iterador2)
+        if print_ == 0:
+            print("_____________")
+            print("Top taxis")
+            print("_____________\n")
+            print_ += 1
+        else:
+            print("_________")
+            print("Top servicios")
+            print("_________\n")
+            print_ += 1
+        iterador = it.newIterator(next_comp)
+        while it.hasNext(iterador):
+            next = it.next(iterador)
+            print(next)
+            print(controller.search(cont, next, print_))
+
+
 def printB(lista):
     iterador = it.newIterator(lista)
     while it.hasNext(iterador):
-        next=it.next(iterador)
+        next = it.next(iterador)
         print(next)
-def printC(lista):
-    if lista==None:
+
+
+def printC(travel):
+    if travel is None:
         print("No hay una camino")
-        return 0 
-    print("hora: ",lista["hour"])
-    iterador=it.newIterator(lista["path"])
+        return 0
+    print("hora recomendada: ", travel["hour"])
+    iterador = it.newIterator(travel["path"])
+    i = 1
+    print('\nCamino:')
     while it.hasNext(iterador):
-       next=it.next(iterador)
-       print("VertexA: ",next["vertexA"][0]+" "+str(next["vertexA"][1]),"VertexB: ",next["vertexB"][0]+" "+str(next["vertexB"][1]))
-    print("time: ", lista["time"])
+        route = it.next(iterador)
+        print(f'{i} :de Community Area {route["vertexA"][0]} a las {route["vertexA"][1]}  hacia  Community Area '
+              f'{route["vertexB"][0]} a las {route["vertexB"][1]}')
+        i += 1
+    print(f'\nduracion del trayecto: {travel["time"] // 60} minutos con {travel["time"] % 60} segundos')
+
 
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
+
 def printMenu():
     print("\n")
     print("*******************************************")
@@ -125,38 +136,43 @@ def cargar(cont):
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
+
     if inputs[0] == "w":
         cont = inicializar()
+
     elif inputs[0] == "q":
+
         t1 = perf_counter()
         cargar(cont)
         t2 = perf_counter()
         print(t2 - t1)
+
     elif int(inputs[0]) == 1:
-        n_top_taxis=input("ingrese el numero de compañias top que desea")
-        n_top_services=input("ingrese el numero de compañias top que desea")
-        lista_final=controller.A(cont,n_top_taxis,n_top_services)
-        printA(lista_final,cont)
+        n_top_taxis = input("ingrese el numero de compañias top que desea")
+        n_top_services = input("ingrese el numero de compañias top que desea")
+        lista_final = controller.A(cont, n_top_taxis, n_top_services)
+        printA(lista_final, cont)
+
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
         if inputs[0] == '1':
             d = input('ingrese date')
             n = input('ingrese n')
             t1 = perf_counter()
-            lista_final=controller.partB_1(cont, d, n)
+            lista_final = controller.partB_1(cont, d, n)
             printB(lista_final)
             t2 = perf_counter()
-            print(t2-t1)
+            print(t2 - t1)
 
         else:
             d1 = input('ingrese date1')
             d2 = input('ingrese date2')
             n = input('ingrese n')
             t1 = perf_counter()
-            lista_final=controller.partB_2(cont, d1, d2, n)
+            lista_final = controller.partB_2(cont, d1, d2, n)
             printB(lista_final)
             t2 = perf_counter()
-            print(t2-t1)
+            print(t2 - t1)
 
     elif int(inputs[0]) == 3:
         h1 = input('hora1')
@@ -164,9 +180,9 @@ while True:
         o = input('pick')
         d = input('drofft')
         t1 = perf_counter()
-        lista_final=controller.partC(cont, o, d, h1, h2)
-        printC(lista_final)
+        travel = controller.partC(cont, o, d, h1, h2)
+        printC(travel)
         t2 = perf_counter()
-        print(t2-t1)
+        print(t2 - t1)
     else:
         break

@@ -47,6 +47,8 @@ recae sobre el controlador.
 # ___________________________________________________
 def incializar():
     return model.newAnalyzer()
+
+
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
@@ -64,21 +66,14 @@ def loadServices(analyzer, servicesfile):
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
                                 delimiter=",")
     for service in input_file:
-        analyzer["num"] += 1
         model.addStopConnection(analyzer, service)
-        taxi_id = service["taxi_id"]
-        compania= service["company"]
-        model.addtaxi(taxi_id, analyzer["taxis"])
-        model.addcompania(compania,taxi_id,analyzer)
     model.addRoutes(analyzer)
-    model.admpqs(analyzer["compcont"], 
-    analyzer['Maxpq-Afiliados-Compañias-services'],
-    analyzer['Maxpq-Afiliados-Compañias-taxis']) 
+    model.admpqs(analyzer["Map_Companies"],
+                 analyzer['Maxpq-Afiliados-Compañias-services'],
+                 analyzer['Maxpq-Afiliados-Compañias-taxis'])
     return analyzer
 
-        
-       
-    return analyzer
+
 
 # ___________________________________________________
 #  Funciones para consultas
@@ -98,26 +93,26 @@ def partC(cont, comunityA, comunityB, hour1, hour2):
     hour1 = model.toDatetimeH(hour1)
     hour2 = model.toDatetimeH(hour2)
     return model.bestTimeToGo(cont['Graph_Duration'], comunityA, comunityB, hour1, hour2)
-def A(analyzer,n_top_taxis,n_top_services):
-    n_top_services=int(n_top_services)
-    n_top_taxis=int(n_top_taxis)
-    lista_final=lt.newList()
-    lista_top_taxis_compani=model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-taxis'],
-                                            n_top_taxis)
-    lista_top_services_compani=model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-services'],
-                                                n_top_services)
+
+
+def A(analyzer, n_top_taxis, n_top_services):
+    n_top_services = int(n_top_services)
+    n_top_taxis = int(n_top_taxis)
+    lista_final = lt.newList()
+    lista_top_taxis_compani = model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-taxis'],
+                                               n_top_taxis)
+    lista_top_services_compani = model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-services'],
+                                                  n_top_services)
     lt.addLast(lista_final, lista_top_services_compani)
     lt.addLast(lista_final, lista_top_taxis_compani)
     return lista_final
-def search(analyzer, key,pos):
-    compania_info=m.get(analyzer["compcont"], key)["value"]
-    if pos ==1:
-       n_servicios=lt.getElement(compania_info,2)
-       n_servicios=m.size(n_servicios)
-    elif pos ==0:
-       n_servicios=lt.getElement(compania_info,1)
+
+
+def search(analyzer, key, pos):
+    compania_info = m.get(analyzer["compcont"], key)["value"]
+    if pos == 1:
+        n_servicios = lt.getElement(compania_info, 2)
+        n_servicios = m.size(n_servicios)
+    elif pos == 0:
+        n_servicios = lt.getElement(compania_info, 1)
     return n_servicios
-
-    
-    
-

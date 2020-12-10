@@ -77,7 +77,7 @@ def newMap(numelements, prime, loadfactor, cmpfunction):
                  'shift': shift,
                  'table': table,
                  'currentfactor': 0,
-                 'limitfactor' : loadfactor,
+                 'limitfactor': loadfactor,
                  'size': 0,
                  'comparefunction': cmpfunction,
                  'type': 'CHAINING'}
@@ -335,3 +335,28 @@ def nextPrime(N):
         if (isPrime(prime) is True):
             found = True
     return int(prime)
+
+
+if __name__ == '__main__':
+    def compareStopIds(stop, keyvaluestop):
+        """
+        Compara dos estaciones
+        """
+        stopcode = keyvaluestop['key']
+        if stop == stopcode:
+            return 0
+        elif stop > stopcode:
+            return 1
+        else:
+            return -1
+
+
+    x = newMap(4, 109345121, 0.6,compareStopIds )
+    
+    for i in range(200):
+        put(x, chr(i), i)
+        print(i, size(x))
+    print(x)
+    for i in range(200):
+        print(get(x,chr(i))['key'] == chr(i))
+        print(get(x, chr(i))['value'] == i)
