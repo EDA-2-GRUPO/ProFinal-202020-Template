@@ -41,8 +41,8 @@ Algorithms, 4th Edition
 def newHeap(cmpfunction):
     """
     Crea un nuevo heap basado en un arreglo, cuyo primer elemento
-    es inicializado en None y no será utilizado
-
+    eslizado
+ inicializado en None y no será uti
     Args:
         cmpfunction: La funcion de comparacion
         size: El numero de elementos

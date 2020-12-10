@@ -31,13 +31,39 @@ from DISClib.ADT import stack
 import timeit
 from DISClib.DataStructures import listiterator as it
 assert config
-
+from DISClib.DataStructures import listiterator as it
+from DISClib.ADT import map as m
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion
 hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
+# ___________________________________________________
+#  printeo funciones
+# ___________________________________________________
+def printA(lista,cont):
+    print(m.size(cont["taxis"]))
+    print(cont["companies"])
+    print_=-1
+    iterador2=it.newIterator(lista)
+    while it.hasNext(iterador2):
+     next_comp=it.next(iterador2)
+     if print_==0:
+         print("_____________")
+         print("Top taxis")
+         print("_____________\n")
+         print_+=1
+     else:
+         print("_________")
+         print("Top servicios")
+         print("_________\n")
+         print_+=1
+     iterador=it.newIterator(next_comp)
+     while it.hasNext(iterador):
+           next=it.next(iterador)
+           print(next)
+           print(controller.search(cont,next,print_))
 
 
 # ___________________________________________________
@@ -56,9 +82,29 @@ def printC(lista):
        next=it.next(iterador)
        print("VertexA: ",next["vertexA"][0]+" "+str(next["vertexA"][1]),"VertexB: ",next["vertexB"][0]+" "+str(next["vertexB"][1]))
     print("time: ", lista["time"])
+
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
+while True:
+    printMenu()
+    inputs = input('Seleccione una opción para continuar\n>')
+
+    if inputs[0] == "q":
+        print("\nInicializando....")
+        # cont es el controlador que se usará de acá en adelante
+        cont = controller.init()
+        print(cont.keys())
+    elif inputs[0] == "w":
+        controller.loadall(cont)
+    elif int(inputs[0]) == 1:
+         n_top_taxis=input("ingrese el numero de compañias top que desea")
+         n_top_services=input("ingrese el numero de compañias top que desea")
+         lista_final=controller.A(cont,n_top_taxis,n_top_services)
+         printA(lista_final,cont)
+    else:
+        print("Opcion invalida")
+        continue
 
 def printMenu():
     print("\n")
