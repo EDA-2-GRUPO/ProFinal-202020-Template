@@ -29,6 +29,7 @@ import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+from time import perf_counter
 
 assert config
 
@@ -57,7 +58,7 @@ def printMenu():
     print("w- Cargar información")
     print("1- Parte A")
     print("2- Parte B")
-    print("5- Parte c")
+    print("3- Parte c")
 
 
 """
@@ -89,7 +90,12 @@ while True:
         cont = inicializar()
 
     elif inputs[0] == "q":
+
+        t1 = perf_counter()
         cargar(cont)
+        t2 = perf_counter()
+        print(t2 - t1)
+
 
     elif int(inputs[0]) == 1:
         pass
@@ -100,20 +106,28 @@ while True:
         if inputs[0] == '1':
             d = input('ingrese date')
             n = input('ingrese n')
+            t1 = perf_counter()
             print(controller.partB_1(cont, d, n))
+            t2 = perf_counter()
+            print(t2-t1)
+
         else:
             d1 = input('ingrese date1')
             d2 = input('ingrese date2')
             n = input('ingrese n')
+            t1 = perf_counter()
             print(controller.partB_2(cont, d1, d2, n))
-
+            t2 = perf_counter()
+            print(t2-t1)
 
     elif int(inputs[0]) == 3:
         h1 = input('hora1')
         h2 = input('hora2')
         o = input('pick')
         d = input('drofft')
+        t1 = perf_counter()
         print(controller.partC(cont, o, d, h1, h2))
-
+        t2 = perf_counter()
+        print(t2-t1)
     else:
         break
