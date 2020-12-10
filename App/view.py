@@ -43,6 +43,12 @@ operación seleccionada.
 # ___________________________________________________
 #  printeo funciones
 # ___________________________________________________
+
+
+
+# ___________________________________________________
+#  Variables
+# ___________________________________________________
 def printA(lista,cont):
     print(m.size(cont["taxis"]))
     print(cont["companies"])
@@ -65,12 +71,6 @@ def printA(lista,cont):
            next=it.next(iterador)
            print(next)
            print(controller.search(cont,next,print_))
-
-
-# ___________________________________________________
-#  Variables
-# ___________________________________________________
-
 def printB(lista):
     iterador = it.newIterator(lista)
     while it.hasNext(iterador):
@@ -87,26 +87,6 @@ def printC(lista):
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n>')
-
-    if inputs[0] == "q":
-        print("\nInicializando....")
-        # cont es el controlador que se usará de acá en adelante
-        cont = controller.init()
-        print(cont.keys())
-    elif inputs[0] == "w":
-        controller.loadall(cont)
-    elif int(inputs[0]) == 1:
-         n_top_taxis=input("ingrese el numero de compañias top que desea")
-         n_top_services=input("ingrese el numero de compañias top que desea")
-         lista_final=controller.A(cont,n_top_taxis,n_top_services)
-         printA(lista_final,cont)
-    else:
-        print("Opcion invalida")
-        continue
-
 def printMenu():
     print("\n")
     print("*******************************************")
@@ -142,22 +122,18 @@ def cargar(cont):
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
-
     if inputs[0] == "w":
         cont = inicializar()
-
     elif inputs[0] == "q":
-
         t1 = perf_counter()
         cargar(cont)
         t2 = perf_counter()
         print(t2 - t1)
-
-
     elif int(inputs[0]) == 1:
-        pass
-
-
+        n_top_taxis=input("ingrese el numero de compañias top que desea")
+        n_top_services=input("ingrese el numero de compañias top que desea")
+        lista_final=controller.A(cont,n_top_taxis,n_top_services)
+        printA(lista_final,cont)
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
         if inputs[0] == '1':

@@ -59,7 +59,7 @@ def newAnalyzer():
    Num: Almacena El numero de viajes
    vertex: Mapa de los vertices segun lat y long
     """
-    Service = {'Graph_Duration': gr.newGraph(datastructure='ADJ_LIST',
+        Service = {'Graph_Duration': gr.newGraph(datastructure='ADJ_LIST',
                                                  directed=True,
                                                  size=200,
                                                  comparefunction=compareStopIds),
@@ -76,7 +76,7 @@ def newAnalyzer():
                                       maptype='PROBING',
                                       comparefunction=compareMp),
                     'Maxpq-Afiliados-Compañias-services': pq.newIndexMinPQ(compareMp),
-                    'Maxpq-Afiliados-Compañias-taxis': pq.newIndexMinPQ(compareMp)}}
+                    'Maxpq-Afiliados-Compañias-taxis': pq.newIndexMinPQ(compareMp)}
         return Service
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')

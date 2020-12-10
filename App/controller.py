@@ -45,15 +45,8 @@ recae sobre el controlador.
 # ___________________________________________________
 #  Inicializacion del catalogo
 # ___________________________________________________
-<<<<<<< HEAD
 def incializar():
     return model.newAnalyzer()
-
-=======
-def init():
-    return model.newAnalyzer()
->>>>>>> origin/GGs
-
 # ___________________________________________________
 #  Funciones para la carga de datos y almacenamiento
 #  de datos en los modelos
