@@ -28,7 +28,7 @@ import sys
 import config
 from App import controller
 from DISClib.ADT import stack
-import timeit
+from DISClib.DataStructures import listiterator as it
 from time import perf_counter
 
 assert config
@@ -45,7 +45,18 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-
+def printB(lista):
+    iterador = it.newIterator(lista)
+    while it.hasNext(iterador):
+        next=it.next(iterador)
+        print(next)
+def printC(lista):
+    print("hora: ",lista["hour"])
+    iterador=it.newIterator(lista["path"])
+    while it.hasNext(iterador):
+       next=it.next(iterador)
+       print("VertexA: ",next["vertexA"][0]+" "+str(next["vertexA"][1]),"VertexB: ",next["vertexB"][0]+" "+str(next["vertexB"][1]))
+    print("time: ", lista["time"])
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
@@ -107,7 +118,8 @@ while True:
             d = input('ingrese date')
             n = input('ingrese n')
             t1 = perf_counter()
-            print(controller.partB_1(cont, d, n))
+            lista_final=controller.partB_1(cont, d, n)
+            printB(lista_final)
             t2 = perf_counter()
             print(t2-t1)
 
@@ -116,7 +128,8 @@ while True:
             d2 = input('ingrese date2')
             n = input('ingrese n')
             t1 = perf_counter()
-            print(controller.partB_2(cont, d1, d2, n))
+            lista_final=controller.partB_2(cont, d1, d2, n)
+            printB(lista_final)
             t2 = perf_counter()
             print(t2-t1)
 
@@ -126,7 +139,8 @@ while True:
         o = input('pick')
         d = input('drofft')
         t1 = perf_counter()
-        print(controller.partC(cont, o, d, h1, h2))
+        lista_final=controller.partC(cont, o, d, h1, h2)
+        printC(lista_final)
         t2 = perf_counter()
         print(t2-t1)
     else:
