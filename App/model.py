@@ -165,8 +165,6 @@ def addTaxi(map_taxis, taxi_id, trip_total, trip_miles):
 def addVertexAndMapDuration(graph, map_routes, origin_f, destination_f, duration):
     gr.insertVertex(graph, origin_f)
     gr.insertVertex(graph, destination_f)
-    if origin_f[0] == '76.0' and origin_f[1] == time(12, 00) and destination_f[0] == '8.0' and destination_f[1] == time(12, 00):
-        print(duration)
     route_k = (origin_f, destination_f)
     route = mp.get(map_routes, route_k)
     if route is None:
@@ -283,25 +281,38 @@ def mstsInRangeDates(DateOmap, date1, date2, n):
 
 def bestTimeToGo(graph, origin, destination, hour1, hour2):
     ac_hour = hour1
-    min_duration, search_r, recomend_go, end_go = None, None, None, None
+    min_duration, search_r, recomend_go, end_go = 0, None, None, None
     while ac_hour < hour2:
         origin_s = (origin, ac_hour)
         arr_hour = ac_hour
         search = djk.Dijkstra(graph, origin_s)
-        while arr_hour < hour2:
+        permition = 900
+        while arr_hour != nextTime(arr_hour) and permition < min_duration:
             destination_s = (destination, arr_hour)
             if djk.hasPathTo(search, destination_s):
                 duration = djk.distTo(search, destination_s)
-                if min_duration is None or duration < min_duration:
-                    min_duration = duration
-                    recomend_go = ac_hour
-                    end_go = arr_hour
-                    search_r = search
-                break
+                if viabletime(ac_hour, arr_hour, duration / 60, permition/60):
+                    if min_duration == 0 or duration < min_duration:
+                        print(2, duration, ac_hour, arr_hour)
+                        min_duration = duration
+                        recomend_go = ac_hour
+                        end_go = arr_hour
+                        search_r = search
+                    if duration <= permition:
+                        break
+            permition += 900
             arr_hour = nextTime(arr_hour)
         ac_hour = nextTime(ac_hour)
+
+    if min_duration == 0:
+        return None
     camino = djk.pathTo(search_r, (destination, end_go))
     return {'hour': recomend_go, 'path': camino, 'time': min_duration}
+
+
+def viabletime(t1, t2, d, p):
+    return t1.hour * 60 + t1.minute + d < (t2.hour * 60 + t2.minute) + p + 15
+
 
 
 # ==============================
@@ -367,6 +378,7 @@ def toDatetimeC(text: str):
 
 def toDatetimeH(time_string):
     return time.fromisoformat(time_string)
+
 
 # ==============================
 # Funciones de Comparacion
