@@ -238,16 +238,16 @@ def rank_maxpq(maxpq, numero):
        pq.delMin(maxpq)
        lt.addLast(lista_companies, llave)
     return lista_companies
-def rehacer(lista, mapa_companies,pq,pos):
+def rehacer(lista, mapa_companies,minpq,pos):
     iterador=it.newIterator(lista)
     while it.hasNext(iterador):
-        nextc=it.next()
-        if pos == 0:
-           numero=lt.get(m.get(mapa_companies,nextc),pos)
+        nextc=it.next(iterador)
+        if pos == 1:
+           numero=lt.getElement(m.get(mapa_companies,nextc)["value"],pos)
         else:
-           mapa=lt.get(m.get(mapa_companies,nextc),pos)
+           mapa=lt.getElement(m.get(mapa_companies,nextc)["value"],pos)
            numero=m.size(mapa)
-        pq.insert(pq,nextc,numero)
+        pq.insert(minpq,nextc,numero)
 # ==============================
 # Funciones de consulta
 # ==============================

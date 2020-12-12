@@ -30,7 +30,6 @@ from App import controller
 from DISClib.ADT import stack
 from DISClib.DataStructures import listiterator as it
 from time import perf_counter
-
 assert config
 from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import map as m
@@ -136,6 +135,7 @@ while True:
         n_top_taxis=input("ingrese el numero de compañias top que desea")
         n_top_services=input("ingrese el numero de compañias top que desea")
         lista_final=controller.A(cont,n_top_taxis,n_top_services)
+        controller.re(cont,lista_final)
         printA(lista_final,cont)
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')

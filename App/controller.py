@@ -32,7 +32,7 @@ import csv
 from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from time import perf_counter
-
+from DISClib.DataStructures import listiterator as it
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 Existen algunas operaciones en las que se necesita invocar
@@ -117,7 +117,19 @@ def search(analyzer, key,pos):
     elif pos ==0:
        n_servicios=lt.getElement(compania_info,1)
     return n_servicios
-
+def re(analyzer,lista):
+    mapa=analyzer['compcont']
+    minpq1=analyzer['Maxpq-Afiliados-Compañias-services']
+    minpq2=analyzer['Maxpq-Afiliados-Compañias-taxis']  
+    f=0
+    iterador2=it.newIterator(lista)
+    while it.hasNext(iterador2):
+     next_list=it.next(iterador2)
+     if f==0:
+        model.rehacer(next_list,mapa,minpq1,1)
+        f+=1
+     else:
+        model.rehacer(next_list,mapa,minpq2,2)
     
     
 
