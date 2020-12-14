@@ -219,7 +219,7 @@ def addcompania(compania, taxi_id, analyzer):
         lt.addLast(lista_compañia, 1)
         lt.addLast(lista_compañia, mapa_taxis)
         m.put(map_compania,compania,lista_compañia)
-def admpqs(map_companies,maxpq_ntaxis,maxpq_nservices):
+def admpqs(map_companies,maxpq_nservices,maxpq_ntaxis):
     lista_companias=m.keySet(map_companies)
     iterador= it.newIterator(lista_companias)
     while it.hasNext(iterador):
@@ -229,8 +229,8 @@ def admpqs(map_companies,maxpq_ntaxis,maxpq_nservices):
        numero_servicios_compani=lt.getElement(compani_info, 1)
        numero_taxis_compani=m.size(map_taxis)
        #add_to_maxpqs
-       pq.insert(maxpq_ntaxis, next_compani,1000000/numero_taxis_compani)
-       pq.insert(maxpq_nservices, next_compani,1000000/numero_servicios_compani)
+       pq.insert(maxpq_ntaxis, next_compani,36032500/numero_taxis_compani)
+       pq.insert(maxpq_nservices, next_compani,36032500/numero_servicios_compani)
 def rank_maxpq(maxpq, numero):
     lista_companies= lt.newList()
     for a in range(0,numero):

@@ -101,6 +101,11 @@ def partC(cont, comunityA, comunityB, hour1, hour2):
 def A(analyzer,n_top_taxis,n_top_services):
     n_top_services=int(n_top_services)
     n_top_taxis=int(n_top_taxis)
+    size=m.size(analyzer['compcont'])
+    if n_top_services>size:
+        n_top_services=size
+    if n_top_taxis>size:
+        n_top_taxis=size
     lista_final=lt.newList()
     lista_top_taxis_compani=model.rank_maxpq(analyzer['Maxpq-Afiliados-Compañias-taxis'],
                                             n_top_taxis)
