@@ -32,19 +32,18 @@ from DISClib.DataStructures import listiterator as it
 from time import perf_counter
 
 assert config
+from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import map as m
-
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion
 hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
-
-
 # ___________________________________________________
 #  printeo funciones
 # ___________________________________________________
+
 
 
 # ___________________________________________________
@@ -100,13 +99,12 @@ def printC(travel):
 # ___________________________________________________
 #  Menu principal
 # ___________________________________________________
-
 def printMenu():
     print("\n")
     print("*******************************************")
     print("Bienvenido")
-    print("q- Inicializar Analizador")
-    print("w- Cargar información")
+    print("w- Inicializar Analizador")
+    print("q- Cargar información")
     print("1- Parte A")
     print("2- Parte B")
     print("3- Parte c")
@@ -136,23 +134,22 @@ def cargar(cont):
 while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n>')
-
     if inputs[0] == "w":
         cont = inicializar()
-
     elif inputs[0] == "q":
-
         t1 = perf_counter()
         cargar(cont)
         t2 = perf_counter()
         print(t2 - t1)
-
     elif int(inputs[0]) == 1:
-        n_top_taxis = input("ingrese el numero de compañias top que desea")
-        n_top_services = input("ingrese el numero de compañias top que desea")
-        lista_final = controller.A(cont, n_top_taxis, n_top_services)
-        printA(lista_final, cont)
-
+        n_top_taxis=input("ingrese el numero de compañias top que desea")
+        n_top_services=input("ingrese el numero de compañias top que desea")
+        t1 = perf_counter()
+        lista_final=controller.A(cont,n_top_taxis,n_top_services)
+        controller.re(cont,lista_final)
+        t2 = perf_counter()
+        print(t2-t1)
+        printA(lista_final,cont)
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
         if inputs[0] == '1':
@@ -163,7 +160,6 @@ while True:
             printB(lista_final)
             t2 = perf_counter()
             print(t2 - t1)
-
         else:
             d1 = input('ingrese date1')
             d2 = input('ingrese date2')

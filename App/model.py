@@ -45,8 +45,6 @@ assert config
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
 """
-
-
 # -----------------------------------------------------
 #                       API
 # -----------------------------------------------------
@@ -194,8 +192,6 @@ def addRoutes(Services):
         route_info = route['value']
         prom = route_info['total_duration'] / route_info['services']
         vertexa, vertexb = route_k
-        if vertexa == ('52.0', time(0, 30)):
-            print(vertexb)
         gr.addEdge(graph_routes, vertexa, vertexb, prom)
 
 
@@ -228,10 +224,9 @@ def addCompany(compania, taxi_id, map_compania):
         m.put(map_taxis, taxi_id, 0)
         m.put(map_compania, compania, compania_info)
 
-
-def admpqs(map_companies, maxpq_ntaxis, maxpq_nservices):
-    lista_companias = m.keySet(map_companies)
-    iterador = it.newIterator(lista_companias)
+def admpqs(map_companies,maxpq_nservices,maxpq_ntaxis):
+    lista_companias=m.keySet(map_companies)
+    iterador= it.newIterator(lista_companias)
     while it.hasNext(iterador):
         next_compani = it.next(iterador)
         compani_info = m.get(map_companies, next_compani)["value"]
@@ -239,10 +234,28 @@ def admpqs(map_companies, maxpq_ntaxis, maxpq_nservices):
         numero_servicios_compani = lt.getElement(compani_info, 1)
         numero_taxis_compani = m.size(map_taxis)
         # add_to_maxpqs
-        pq.insert(maxpq_ntaxis, next_compani, 1000000 / numero_taxis_compani)
-        pq.insert(maxpq_nservices, next_compani, 1000000 / numero_servicios_compani)
+        pq.insert(maxpq_ntaxis, next_compani, 36032500 / numero_taxis_compani)
+        pq.insert(maxpq_nservices, next_compani, 36032500 / numero_servicios_compani)
 
 
+def rank_maxpq(maxpq, numero):
+    lista_companies= lt.newList()
+    for a in range(0,numero):
+       llave=pq.min(maxpq)
+       pq.delMin(maxpq)
+       lt.addLast(lista_companies, llave)
+    return lista_companies
+
+def rehacer(lista, mapa_companies,minpq,pos):
+    iterador=it.newIterator(lista)
+    while it.hasNext(iterador):
+        nextc=it.next(iterador)
+        if pos == 1:
+           numero=lt.getElement(m.get(mapa_companies,nextc)["value"],pos)
+        else:
+           mapa=lt.getElement(m.get(mapa_companies,nextc)["value"],pos)
+           numero=m.size(mapa)
+        pq.insert(minpq,nextc,numero)
 # ==============================
 # Funciones de consulta
 # ==============================
@@ -279,10 +292,7 @@ def bestTimeToGo(graph, origin, destination, hour1, hour2):
     while ac_hour < hour2:
         origin_s = (origin, ac_hour)
         arr_hour = ac_hour
-        t1 = perf_counter()
         search = djk.Dijkstra(graph, origin_s)
-        t2 = perf_counter()
-        print(t2 - t1)
         max_p_d, min_p_d = 900, 0
         while arr_hour != nextTime(arr_hour) and (min_duration is None or min_p_d < min_duration):
             destination_s = (destination, arr_hour)
@@ -317,18 +327,6 @@ def rank_maxpq(maxpq, numero):
 # ==============================
 # Funciones Helper
 # ==============================
-def rehacer(lista, mapa_companies, pq, pos):
-    iterador = it.newIterator(lista)
-    while it.hasNext(iterador):
-        nextc = it.next()
-        if pos == 0:
-            numero = lt.get(m.get(mapa_companies, nextc), pos)
-        else:
-            mapa = lt.get(m.get(mapa_companies, nextc), pos)
-            numero = m.size(mapa)
-        pq.insert(pq, nextc, numero)
-
-
 def mstsFreqTaxiInMap(mapTaxis, n):
     taxis_ids = mp.keySet(mapTaxis)
     iter_taxis = it.newIterator(taxis_ids)
