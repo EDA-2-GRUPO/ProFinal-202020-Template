@@ -1,0 +1,21 @@
+¿Qué TAD utilizaron en la solución del requerimiento?
+map, graph
+
+¿Por qué eligieron esa estructura de datos?
+en el map se guardo informacion de las rutas, su tiempo de duracion y numero de servicios, en el grafo se añadieron
+las rutas con su duracion promedio calculada. el grafo permitira hacer busqueda del camino con menos duracion
+
+ ¿Cuál es la complejidad estimada del algoritmo implementado?
+en carga:
+ n + rt
+
+en ejecucion:
+    mejor caso:
+    n_t*n_c*los(rt)
+
+n = numero_servicios
+n_c = numero de comunitys area
+rt = numero de rutas
+f = fechas_registradas
+k = numero_ranking
+

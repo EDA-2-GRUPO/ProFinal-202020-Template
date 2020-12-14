@@ -1,0 +1,21 @@
+¿Qué TAD utilizaron en la solución del requerimiento?
+Order map, map, listas
+
+¿Por qué eligieron esa estructura de datos?
+Oreder map con sus keys iguales la las fechas y su valor un Hash table con las llaves iguales a los ids dek carro y
+ por valor la informacion de pagos, millas y servicios. para manejar con los datos en un rango la mejor estructura son
+ los odermap,y para adceder a datos por nombre lo mejor es un map. y las listas fueron usadas para realizar el ranking
+
+ ¿Cuál es la complejidad estimada del algoritmo implementado?
+en carga:
+O(n + nlog(f) )
+
+en ejecucion:
+    para una fecha:    log(f)  + t_f*k
+    para varias fechas:  n_f*log(f) + taxis_fechas*k
+
+n = numero_servicios
+f = fechas_registradas
+k = numero_ranking
+t_f = taxis_fechas
+n_f = numero_fechas
