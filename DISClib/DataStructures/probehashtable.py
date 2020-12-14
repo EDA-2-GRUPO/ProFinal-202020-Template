@@ -84,12 +84,12 @@ def newMap(numelements, prime, loadfactor, comparefunction):
         error.reraise(exp, 'Probe:newMap')
 
 
-def put(map, key, value):
+def put(map_, key, value):
     """ Ingresa una pareja llave,valor a la tabla de hash.
     Si la llave ya existe en la tabla, se reemplaza el valor
 
     Args:
-        map: El map a donde se guarda la pareja
+        map_: El map a donde se guarda la pareja
         key: la llave asociada a la pareja
         value: el valor asociado a la pareja
     Returns:
@@ -98,19 +98,20 @@ def put(map, key, value):
         Exception
     """
     try:
-        hash = hashValue(map, key)      # Se obtiene el hascode de la llave
+        hash = hashValue(map_, key)      # Se obtiene el hascode de la llave
         entry = me.newMapEntry(key, value)
-        pos = findSlot(map, key, hash, map['comparefunction'])
-        lt.changeInfo(map['table'], abs(pos), entry)
+        pos = findSlot(map_, key, hash, map_['comparefunction'])
+        lt.changeInfo(map_['table'], abs(pos), entry)
         if (pos < 0):           # Se reemplaza el valor con el nuevo valor
-            map['size'] += 1
-            map['currentfactor'] = map['size'] / map['capacity']
+            map_['size'] += 1
+            map_['currentfactor'] = map_['size'] / map_['capacity']
 
-        if (map['currentfactor'] >= map['limitfactor']):
-            rehash(map)
-        return map
+        if map_['currentfactor'] >= map_['limitfactor']:
+            rehash(map_)
+        return map_
     except Exception as exp:
         error.reraise(exp, 'Probe:put')
+
 
 
 def contains(map, key):
@@ -354,7 +355,7 @@ def rehash(map):
         map['capacity'] = capacity
         for pos in range(lt.size(oldtable)):
             entry = lt.getElement(oldtable, pos+1)
-            if (entry['key'] is not None and entry['key'] != '__EMPTY__'):
+            if entry['key'] is not None and entry['key'] != '__EMPTY__':
                 hash = hashValue(map, entry['key'])
                 pos = findSlot(map, entry['key'], hash, map['comparefunction'])
                 lt.changeInfo(map['table'], abs(pos), entry)

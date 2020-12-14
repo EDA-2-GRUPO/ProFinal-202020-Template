@@ -25,12 +25,13 @@
  *
  """
 
-
 import random as rd
 import math
 import config
 from DISClib.DataStructures import mapentry as me
 from DISClib.DataStructures import liststructure as lt
+from DISClib.Utils import error as error
+
 assert config
 
 """
@@ -63,8 +64,8 @@ def newMap(numelements, prime, loadfactor, cmpfunction):
     Raises:
         Exception
     """
-    capacity = nextPrime(numelements//loadfactor)
-    scale = rd.randint(1, prime-1) + 1
+    capacity = nextPrime(numelements // loadfactor)
+    scale = rd.randint(1, prime - 1) + 1
     shift = rd.randint(1, prime)
     table = lt.newList('ARRAY_LIST', cmpfunction)
     for _ in range(capacity):
@@ -75,6 +76,8 @@ def newMap(numelements, prime, loadfactor, cmpfunction):
                  'scale': scale,
                  'shift': shift,
                  'table': table,
+                 'currentfactor': 0,
+                 'limitfactor' : loadfactor,
                  'size': 0,
                  'comparefunction': cmpfunction,
                  'type': 'CHAINING'}
@@ -102,12 +105,12 @@ def contains(map, key):
         return False
 
 
-def put(map, key, value):
+def put(map_, key, value):
     """ Ingresa una pareja llave,valor a la tabla de hash.
     Si la llave ya existe en la tabla, se reemplaza el valor
 
     Args:
-        map: El map a donde se guarda la pareja
+        map_: El map a donde se guarda la pareja
         key: la llave asociada a la pareja
         value: el valor asociado a la pareja
     Returns:
@@ -115,16 +118,46 @@ def put(map, key, value):
     Raises:
         Exception
     """
-    hash = hashValue(map, key)
-    bucket = lt.getElement(map['table'], hash)
+    hash = hashValue(map_, key)
+    bucket = lt.getElement(map_['table'], hash)
     entry = me.newMapEntry(key, value)
     pos = lt.isPresent(bucket, key)
-    if pos > 0:    # La pareja ya exista, se reemplaza el valor
+    if pos > 0:  # La pareja ya exista, se reemplaza el valor
         lt.changeInfo(bucket, pos, entry)
     else:
-        lt.addLast(bucket, entry)   # La llave no existia
-        map['size'] += 1
-    return map
+        lt.addLast(bucket, entry)  # La llave no existia
+        map_['size'] += 1
+        map_['currentfactor'] = map_['size'] / map_['capacity']
+    if map_['currentfactor'] >= map_['limitfactor']:
+        rehash(map_)
+    return map_
+
+
+def rehash(map_):
+    """
+    Se aumenta la capacidad de la tabla al doble y se hace rehash de
+    todos los elementos de la tabla.
+    """
+    try:
+        cmpfunction = map_['comparefunction']
+        newtable = lt.newList('ARRAY_LIST', cmpfunction)
+        capacity = nextPrime(map_['capacity'] * 2)
+        for _ in range(capacity):
+            n_bucket = lt.newList('SINGLE_LINKED', cmpfunction)
+            lt.addLast(newtable, n_bucket)
+        oldtable = map_['table']
+        map_['size'] = 0
+        map_['currentfactor'] = 0
+        map_['table'] = newtable
+        map_['capacity'] = capacity
+        for pos in range(lt.size(oldtable)):
+            bucket = lt.getElement(oldtable, pos + 1)
+            for i in range(lt.size(bucket)):
+                entry = lt.getElement(bucket, i + 1)
+                put(map_, entry['key'], entry['value'])
+        return map_
+    except Exception as exp:
+        error.reraise(exp, 'Probe:rehash')
 
 
 def get(map, key):
@@ -194,7 +227,7 @@ def isEmpty(map):
     bucket = lt.newList()
     empty = True
     for pos in range(lt.size(map['table'])):
-        bucket = lt.getElement(map['table'], pos+1)
+        bucket = lt.getElement(map['table'], pos + 1)
         if lt.isEmpty(bucket) is False:
             empty = False
             break
@@ -214,9 +247,9 @@ def keySet(map):
     """
     ltset = lt.newList('SINGLE_LINKED', map['comparefunction'])
     for pos in range(lt.size(map['table'])):
-        bucket = lt.getElement(map['table'], pos+1)
+        bucket = lt.getElement(map['table'], pos + 1)
         for element in range(lt.size(bucket)):
-            entry = lt.getElement(bucket, element+1)
+            entry = lt.getElement(bucket, element + 1)
             lt.addLast(ltset, entry['key'])
     return ltset
 
@@ -234,9 +267,9 @@ def valueSet(map):
     """
     ltset = lt.newList('SINGLE_LINKED', map['comparefunction'])
     for pos in range(lt.size(map['table'])):
-        bucket = lt.getElement(map['table'], pos+1)
+        bucket = lt.getElement(map['table'], pos + 1)
         for element in range(lt.size(bucket)):
-            entry = lt.getElement(bucket, element+1)
+            entry = lt.getElement(bucket, element + 1)
             lt.addLast(ltset, entry['value'])
     return ltset
 
@@ -260,7 +293,7 @@ def hashValue(table, key):
     b = table['shift']
     p = table['prime']
     m = table['capacity']
-    value = int((abs(h*a + b) % p) % m + 1)
+    value = int((abs(h * a + b) % p) % m + 1)
     return value
 
 
@@ -271,16 +304,16 @@ def hashValue(table, key):
 
 def isPrime(n):
     # Corner cases
-    if(n <= 1):
+    if (n <= 1):
         return False
-    if(n <= 3):
+    if (n <= 3):
         return True
 
-    if(n % 2 == 0 or n % 3 == 0):
+    if (n % 2 == 0 or n % 3 == 0):
         return False
 
     for i in range(5, int(math.sqrt(n) + 1), 6):
-        if(n % i == 0 or n % (i + 2) == 0):
+        if (n % i == 0 or n % (i + 2) == 0):
             return False
 
     return True
@@ -297,8 +330,8 @@ def nextPrime(N):
     found = False
     # Loop continuously until isPrime returns
     # True for a number greater than n
-    while(not found):
+    while (not found):
         prime = prime + 1
-        if(isPrime(prime) is True):
+        if (isPrime(prime) is True):
             found = True
     return int(prime)

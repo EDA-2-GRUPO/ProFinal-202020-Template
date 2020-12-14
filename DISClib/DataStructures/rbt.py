@@ -29,8 +29,8 @@ import config
 from DISClib.DataStructures import rbtnode as node
 from DISClib.Utils import error as error
 from DISClib.ADT import list as lt
-assert config
 
+assert config
 
 """
 Implementación de una tabla de simbolos ordenada, mediante un arbol binario
@@ -40,6 +40,7 @@ Este código está basados en la implementación
 propuesta por R.Sedgewick y Kevin Wayne en su libro
 Algorithms, 4th Edition
 """
+
 
 # ________________________________________________________________________
 #                     API  RBT
@@ -626,26 +627,26 @@ def insertNode(root, key, value, comparefunction):
         Exception
     """
     try:
-        if root is None:     # Se trata de la raíz del árbol
+        if root is None:  # Se trata de la raíz del árbol
             root = node.newNode(key, value, 1, node.RED)
             return root
 
         cmp = comparefunction(key, root['key'])
 
-        if (cmp < 0):     # La llave a insertar es menor que la raiz
-            root['left'] = insertNode(root['left'],  key, value,
+        if cmp < 0:  # La llave a insertar es menor que la raiz
+            root['left'] = insertNode(root['left'], key, value,
                                       comparefunction)
-        elif (cmp > 0):    # La llave a insertar es mayor que la raíz
+        elif cmp > 0:  # La llave a insertar es mayor que la raíz
             root['right'] = insertNode(root['right'], key, value,
                                        comparefunction)
-        else:              # La llave ya se encuentra en la tabla
+        else:  # La llave ya se encuentra en la tabla
             root['value'] = value
 
         # Se ajusta el balanceo del arbol
 
-        if (isRed(root['right']) and not (isRed(root['left']))):
+        if isRed(root['right']) and not (isRed(root['left'])):
             root = rotateLeft(root)
-        if (isRed(root['left']) and isRed(root['left']['left'])):
+        if isRed(root['left']) and isRed(root['left']['left']):
             root = rotateRight(root)
         if (isRed(root['left']) and isRed(root['right'])):
             flipColors(root)
@@ -915,7 +916,7 @@ def selectKey(root, key):
             if (cont > key):
                 return selectKey(root['left'], key)
             elif (cont < key):
-                return selectKey(root['right'], key-cont-1)
+                return selectKey(root['right'], key - cont - 1)
             else:
                 return root
         return root
@@ -936,6 +937,7 @@ def deleteMinTree(root):
     """
     try:
         if (root['left'] is None):
+            print(root)
             return None
         if ((not isRed(root['left'])) and ((not isRed(root['left']['left'])))):
             root = moveRedLeft(root)
@@ -966,8 +968,7 @@ def deleteMaxTree(root):
             return None
 
         if ((not isRed(root['right'])) and
-           ((not isRed(root['right']['left'])))):
-
+                ((not isRed(root['right']['left'])))):
             root = moveRedRight(root)
 
         root['right'] = deleteMaxTree(root['right'])
@@ -1061,7 +1062,7 @@ def removeKey(root, key, cmpfunction):
     try:
         if (cmpfunction(key, root['key']) < 0):
             if ((not isRed(root['left'])) and
-               (not isRed(root['left']['left']))):
+                    (not isRed(root['left']['left']))):
                 root = moveRedLeft(root)
             root['left'] = removeKey(root['left'], key, cmpfunction)
         else:
@@ -1069,11 +1070,11 @@ def removeKey(root, key, cmpfunction):
                 root = rotateRight(root)
 
             if ((cmpfunction(key, root['key']) == 0) and
-               (root['right'] is None)):
+                    (root['right'] is None)):
                 return None
 
             if ((not isRed(root['right']) and
-               (not isRed(root['right']['left'])))):
+                 (not isRed(root['right']['left'])))):
                 root = moveRedRight(root)
 
             if ((cmpfunction(key, root['key']) == 0)):
@@ -1088,3 +1089,30 @@ def removeKey(root, key, cmpfunction):
 
     except Exception as exp:
         error.reraise(exp, 'RBT:removeKey')
+
+
+if __name__ == '__main__':
+    import random as r
+
+
+    def compareOmpLst(date1, date2):
+        """
+        Compara dos elementos
+        """
+        if date1 == date2:
+            return 0
+        elif date1 > date2:
+            return 1
+        else:
+            return -1
+
+
+    x = newMap(compareOmpLst)
+    for i in range(100):
+        put(x, r.randint(1, 200), i)
+    print(size(x))
+    for i in range(99):
+        print(minKey(x))
+        deleteMin(x)
+        print(size(x))
+
