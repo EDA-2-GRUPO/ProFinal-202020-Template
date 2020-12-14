@@ -6,7 +6,7 @@ Se utilizo primero un mapa para poder guardar los taxis y de esta forma que no s
 Despues un mapa el cual almacenaba la informacion con la compañia como llave y una lista como valor, la cual en la posicion 0 tiene el contador de n de servicios,
 y en la pos 1 un mapa con los taxis de esa compañia
 Y para terminar se tienen dos min pqs para guardar las compañias en cada una de ellas y dependiendo si el min pq es de compañias o taxis lo guarde la compañia con la prioridad de numero/nservicios (esto se hizo para que el
-min pq funcionara como un max pq), para que cuando corra el requerimiento se demore poco.
+min pq funcionara como un max pq) (n=es cualquier numero mejor si es grande), para que cuando corra el requerimiento se demore poco.
 ¿Cuál es la complejidad estimada del algoritmo implementado?
 el de carga es k+clog c
 y el algoritmo de corrido es log (c) * M+log (c)*N
