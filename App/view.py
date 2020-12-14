@@ -53,7 +53,7 @@ operación seleccionada.
 # ___________________________________________________
 def printA(lista, cont):
     print(m.size(cont["taxis"]))
-    print(cont["companies"])
+    print(m.size(cont['Map_Companies']))
     print_ = -1
     iterador2 = it.newIterator(lista)
     while it.hasNext(iterador2):
