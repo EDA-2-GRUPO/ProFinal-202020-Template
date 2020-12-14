@@ -134,8 +134,11 @@ while True:
     elif int(inputs[0]) == 1:
         n_top_taxis=input("ingrese el numero de compañias top que desea")
         n_top_services=input("ingrese el numero de compañias top que desea")
+        t1 = perf_counter()
         lista_final=controller.A(cont,n_top_taxis,n_top_services)
         controller.re(cont,lista_final)
+        t2 = perf_counter()
+        print(t2-t1)
         printA(lista_final,cont)
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
@@ -147,7 +150,6 @@ while True:
             printB(lista_final)
             t2 = perf_counter()
             print(t2-t1)
-
         else:
             d1 = input('ingrese date1')
             d2 = input('ingrese date2')
@@ -157,7 +159,6 @@ while True:
             printB(lista_final)
             t2 = perf_counter()
             print(t2-t1)
-
     elif int(inputs[0]) == 3:
         h1 = input('hora1')
         h2 = input('hora2')
