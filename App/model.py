@@ -37,6 +37,7 @@ from datetime import datetime, time
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from time import perf_counter
 
 assert config
 
@@ -65,14 +66,12 @@ def newAnalyzer():
                                                   size=200,
                                                   comparefunction=compareStopIds),
                     "Map_Routes": mp.newMap(numelements=200,
-                                            maptype="PROBING",
                                             comparefunction=compareStopIds, loadfactor=0.5),
                     "Omap_Dates": omp.newMap(omaptype='RBT', comparefunction=compareOmpLst),
                     'taxis': m.newMap(numelements=14000,
                                       maptype='PROBING',
                                       comparefunction=compareMp),
-                    'Map_Companies': m.newMap(numelements=14000,
-                                              maptype='PROBING',
+                    'Map_Companies': m.newMap(numelements=200,
                                               comparefunction=compareMp),
                     'Maxpq-Afiliados-Compañias-services': pq.newIndexMinPQ(compareMp),
                     'Maxpq-Afiliados-Compañias-taxis': pq.newIndexMinPQ(compareMp),
@@ -115,15 +114,22 @@ def addStopConnection(Services, service):
         if Ocurredt1:
             Ocurredt1 = toDatetimeC(Ocurredt1)
             if taxi_id and trip_miles and trip_total:
-                addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
+                # addDate(Services['Omap_Dates'], Ocurredt1.date(), taxi_id, trip_total, trip_miles)
+                pass
             if origin and destination and duration and Ocurredt2:
                 Ocurredt2 = toDatetimeC(Ocurredt2)
                 orgin_f, destination_f = (origin, Ocurredt1.time()), (destination, Ocurredt2.time())
+                if orgin_f == ('52.0', time(0, 30)):
+                    print(orgin_f, destination_f )
                 addVertexAndMapDuration(Services['Graph_Duration'], Services['Map_Routes'], orgin_f, destination_f,
                                         duration)
         return Services
     except Exception as exp:
         error.reraise(exp, 'model:addStopConnection')
+
+
+def format_station(station, hour: time):
+    return station + '-' + str(hour.hour) + ':' + str(hour.minute)
 
 
 def addDate(DateOmap, date, taxi_id, trip_total, trip_miles):
@@ -188,6 +194,8 @@ def addRoutes(Services):
         route_info = route['value']
         prom = route_info['total_duration'] / route_info['services']
         vertexa, vertexb = route_k
+        if vertexa == ('52.0', time(0, 30)):
+            print(vertexb)
         gr.addEdge(graph_routes, vertexa, vertexb, prom)
 
 
@@ -271,23 +279,23 @@ def bestTimeToGo(graph, origin, destination, hour1, hour2):
     while ac_hour < hour2:
         origin_s = (origin, ac_hour)
         arr_hour = ac_hour
+        t1 = perf_counter()
         search = djk.Dijkstra(graph, origin_s)
-        permition = 900
-        while arr_hour != nextTime(arr_hour) and (min_duration is None or min_duration < permition):
+        t2 = perf_counter()
+        print(t2 - t1)
+        max_p_d, min_p_d = 900, 0
+        while arr_hour != nextTime(arr_hour) and (min_duration is None or min_p_d < min_duration):
             destination_s = (destination, arr_hour)
             if djk.hasPathTo(search, destination_s):
                 duration = djk.distTo(search, destination_s)
-                print(1, duration, ac_hour, arr_hour)
-                if viableTime(ac_hour, arr_hour, duration / 60, permition / 60):
+                if viableTime(ac_hour, arr_hour, duration / 60, max_p_d / 60):
                     if min_duration is None or duration < min_duration:
-                        print(2, duration, ac_hour, arr_hour)
                         min_duration = duration
-                        recomend_go = ac_hour
-                        end_go = arr_hour
+                        recomend_go, end_go = ac_hour, arr_hour
                         search_r = search
-                    if duration <= permition:
+                    if duration <= max_p_d:
                         break
-            permition += 900
+            min_p_d, max_p_d = max_p_d, max_p_d + 900
             arr_hour = nextTime(arr_hour)
         ac_hour = nextTime(ac_hour)
 

@@ -30,25 +30,29 @@ orientada a menor
 """
 
 
-def newIndexHeap(cmpfunction, gide='Min'):
+def newIndexHeap(cmpfunction):
     """
     Crea un cola de prioridad indexada orientada a menor
 
     Args:
-        cmpfunction:
-        gide:
+        cmpfunction: La funcion de comparacion
+        size: El numero de elementos
     Returns:
        Una nueva cola de prioridad indexada
     Raises:
         Exception
     """
     try:
-        indexheap = {'elements': lt.newList(datastructure='ARRAY_LIST',
-                                            cmpfunction=cmpfunction),
-                     'qpMap': map.newMap(maptype='PROBING', comparefunction=cmpfunction),
-                     'size': 0, 'gide': None}
-        gide = smaller if gide == 'Max' else greater
-        indexheap['gide'] = gide
+        indexheap = {'elements': None,
+                     'qpMap': None,
+                     'size': 0,
+                     'cmpfunction': cmpfunction}
+        indexheap['elements'] = lt.newList(datastructure='ARRAY_LIST',
+                                           cmpfunction=cmpfunction)
+        indexheap['qpMap'] = map.newMap(
+                                        maptype='PROBING',
+                                        comparefunction=cmpfunction
+                                        )
         return indexheap
     except Exception as exp:
         error.reraise(exp, 'indexheap:newindexheap')
@@ -140,12 +144,12 @@ def min(iheap):
         Exception
     """
     try:
-        if (iheap['size'] > 0):
-            firstIdx = lt.getElement(iheap['elements'], 1)
-            return firstIdx['key']
+        if(iheap['size'] > 0):
+            minIdx = lt.getElement(iheap['elements'], 1)
+            return minIdx['key']
         return None
     except Exception as exp:
-        error.reraise(exp, 'indexheap:first')
+        error.reraise(exp, 'indexheap:min')
 
 
 def delMin(iheap):
@@ -162,15 +166,15 @@ def delMin(iheap):
     """
     try:
         if (iheap['size'] > 0):
-            firstIdx = lt.getElement(iheap['elements'], 1)
+            minIdx = lt.getElement(iheap['elements'], 1)
             exchange(iheap, 1, iheap['size'])
             iheap['size'] -= 1
             sink(iheap, 1)
-            map.remove(iheap['qpMap'], firstIdx['key'])
-            return firstIdx['key']
+            map.remove(iheap['qpMap'], minIdx['key'])
+            return minIdx['key']
         return None
     except Exception as exp:
-        error.reraise(exp, 'indexheap:delFirst')
+        error.reraise(exp, 'indexheap:delMin')
 
 
 def decreaseKey(iheap, key, newindex):
@@ -252,17 +256,6 @@ def greater(iheap, parent, element):
         error.reraise(exp, 'indexheap:greater')
 
 
-def smaller(iheap,parent, element):
-    """
-       Indica si el index de parent es mayor
-       que index de element
-       """
-    try:
-        return parent['index'] < element['index']
-    except Exception as exp:
-        error.reraise(exp, 'indexheap:greater')
-
-
 def swim(iheap, pos):
     """
     Deja en el lugar indicado un elemento adicionado
@@ -278,15 +271,14 @@ def swim(iheap, pos):
         Exception
     """
     try:
-        gide = iheap['gide']
-        while pos > 1:
-            posparent = int((pos / 2))
+        while (pos > 1):
+            posparent = int((pos/2))
             poselement = int(pos)
             parent = lt.getElement(iheap['elements'], posparent)
             element = lt.getElement(iheap['elements'], poselement)
-            if gide(iheap, parent, element):
+            if greater(iheap, parent, element):
                 exchange(iheap, posparent, poselement)
-            pos = (pos // 2)
+            pos = (pos//2)
     except Exception as exp:
         error.reraise(exp, 'indexheap:swim')
 
@@ -306,15 +298,14 @@ def sink(iheap, pos):
     """
     try:
         size = iheap['size']
-        gide = iheap['gide']
-        while ((2 * pos <= size)):
-            j = 2 * pos
+        while ((2*pos <= size)):
+            j = 2*pos
             if (j < size):
-                if gide(iheap, lt.getElement(iheap['elements'], j),
-                        lt.getElement(iheap['elements'], (j + 1))):
+                if greater(iheap, lt.getElement(iheap['elements'], j),
+                           lt.getElement(iheap['elements'], (j+1))):
                     j += 1
-            if (not gide(iheap, lt.getElement(iheap['elements'], pos),
-                         lt.getElement(iheap['elements'], j))):
+            if (not greater(iheap, lt.getElement(iheap['elements'], pos),
+                            lt.getElement(iheap['elements'], j))):
                 break
             exchange(iheap, pos, j)
             pos = j

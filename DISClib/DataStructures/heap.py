@@ -52,13 +52,10 @@ def newHeap(cmpfunction):
         Exception
     """
     try:
-        heap = {'elements': None,
-                'size': 0,
-                'cmpfunction': cmpfunction
-                }
+        heap = {'elements': lt.newList(datastructure='ARRAY_LIST',
 
-        heap['elements'] = lt.newList(datastructure='ARRAY_LIST',
-                                      cmpfunction=cmpfunction)
+                                     cmpfunction=cmpfunction), 'size': 0, 'cmpfunction': cmpfunction}
+
         return heap
     except Exception as exp:
         error.reraise(exp, 'newHeap')

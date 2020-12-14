@@ -65,14 +65,18 @@ def loadServices(analyzer, servicesfile):
     servicesfile = cf.data_dir + servicesfile
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
                                 delimiter=",")
+    i = 1
     for service in input_file:
+        if i % 100000 == 0:
+            print(i, 'servicios cargados')
         model.addStopConnection(analyzer, service)
+    print('añadiendo ruta')
     model.addRoutes(analyzer)
+    print('cargando compañias')
     model.admpqs(analyzer["Map_Companies"],
                  analyzer['Maxpq-Afiliados-Compañias-services'],
                  analyzer['Maxpq-Afiliados-Compañias-taxis'])
     return analyzer
-
 
 
 # ___________________________________________________
@@ -90,8 +94,6 @@ def partB_2(cont, date1, date2, n):
 
 
 def partC(cont, comunityA, comunityB, hour1, hour2):
-    hour1 = model.toDatetimeH(hour1)
-    hour2 = model.toDatetimeH(hour2)
     return model.bestTimeToGo(cont['Graph_Duration'], comunityA, comunityB, hour1, hour2)
 
 
