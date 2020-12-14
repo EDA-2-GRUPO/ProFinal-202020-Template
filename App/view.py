@@ -34,16 +34,18 @@ from time import perf_counter
 assert config
 from DISClib.DataStructures import listiterator as it
 from DISClib.ADT import map as m
+
 """
 La vista se encarga de la interacción con el usuario.
 Presenta el menu de opciones  y  por cada seleccion
 hace la solicitud al controlador para ejecutar la
 operación seleccionada.
 """
+
+
 # ___________________________________________________
 #  printeo funciones
 # ___________________________________________________
-
 
 
 # ___________________________________________________
@@ -142,14 +144,14 @@ while True:
         t2 = perf_counter()
         print(t2 - t1)
     elif int(inputs[0]) == 1:
-        n_top_taxis=input("ingrese el numero de compañias top que desea")
-        n_top_services=input("ingrese el numero de compañias top que desea")
+        n_top_taxis = input("ingrese el numero de compañias top que desea")
+        n_top_services = input("ingrese el numero de compañias top que desea")
         t1 = perf_counter()
-        lista_final=controller.A(cont,n_top_taxis,n_top_services)
-        controller.re(cont,lista_final)
+        lista_final = controller.A(cont, n_top_taxis, n_top_services)
+        controller.re(cont, lista_final)
         t2 = perf_counter()
-        print(t2-t1)
-        printA(lista_final,cont)
+        print(t2 - t1)
+        printA(lista_final, cont)
     elif int(inputs[0]) == 2:
         inputs = input('1: en una fecha, 2: en un rango de fechas\n>')
         if inputs[0] == '1':
